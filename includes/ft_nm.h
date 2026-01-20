@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/01/20 08:37:49 by lucas                  ##+              */
-/*    Updated: 2026/01/20 08:37:49 by lucas                 #+                */
+/*    Updated: 2026/01/20 08:50:53 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@
 # define STT_FUNC    2
 # define STT_SECTION 3
 # define STT_FILE    4
+# define STT_GNU_IFUNC 10
 
 # define ELF32_ST_BIND(i)   ((i) >> 4)
 # define ELF32_ST_TYPE(i)   ((i) & 0xf)

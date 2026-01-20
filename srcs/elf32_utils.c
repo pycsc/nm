@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/01/20 08:37:49 by lucas                  ##+              */
-/*    Updated: 2026/01/20 08:37:49 by lucas                 #+                */
+/*    Updated: 2026/01/20 08:50:53 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,12 @@ char	get_symbol_type_32(Elf32_Sym *sym, Elf32_Shdr *shdr)
 
 	if (sym->st_shndx == SHN_UNDEF)
 		return ('U');
+	if (ELF32_ST_TYPE(sym->st_info) == STT_GNU_IFUNC)
+	{
+		if (ELF32_ST_BIND(sym->st_info) == STB_LOCAL)
+			return ('i');
+		return ('I');
+	}
 	if (sym->st_shndx == SHN_ABS)
 		c = 'A';
 	else if (sym->st_shndx == SHN_COMMON)
