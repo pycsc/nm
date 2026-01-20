@@ -6,7 +6,7 @@
 #    By: lucas <lucas@tsiaraso.com>                   +########+               #
 #                                                           +###+              #
 #    Created: 2026/01/20 08:37:49 by lucas                   ##+               #
-#    Updated: 2026/01/20 09:50:45 by lucas                  #+                 #
+#    Updated: 2026/01/20 11:06:27 by lucas                  #+                 #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS		= main.c \
 			  elf64_utils.c \
 			  macho64.c \
 			  macho64_utils.c \
+			  macho64_fill.c \
 			  macho32.c \
 			  macho32_utils.c \
 			  file_detect.c \
