@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/01/20 08:37:49 by lucas                  ##+              */
-/*    Updated: 2026/01/20 08:37:49 by lucas                 #+                */
+/*    Updated: 2026/01/20 09:50:45 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,18 @@ char	get_sect_type_macho(char *segname, char *sectname)
 	{
 		if (ft_strcmp(sectname, "__text") == 0)
 			return ('T');
-		return ('T');
+		return ('S');
 	}
 	if (ft_strcmp(segname, "__DATA") == 0)
 	{
 		if (ft_strcmp(sectname, "__bss") == 0)
 			return ('B');
+		if (ft_strcmp(sectname, "__common") == 0)
+			return ('S');
 		return ('D');
 	}
+	if (ft_strcmp(segname, "__DATA_CONST") == 0)
+		return ('S');
 	if (ft_strcmp(segname, "__BSS") == 0)
 		return ('B');
 	return ('S');

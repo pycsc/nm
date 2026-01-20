@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/01/20 08:37:49 by lucas                  ##+              */
-/*    Updated: 2026/01/20 08:37:49 by lucas                 #+                */
+/*    Updated: 2026/01/20 09:50:45 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,11 @@ static char	to_lower(char c)
 
 int	ft_strcmp_nocase(const char *s1, const char *s2)
 {
-	if (*s1 == '_')
+	if (*s1 == '_' && *s2 == '_')
+	{
 		s1++;
-	if (*s2 == '_')
 		s2++;
+	}
 	while (*s1 && *s2)
 	{
 		if (to_lower(*s1) != to_lower(*s2))
