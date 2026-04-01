@@ -1,4 +1,3 @@
-#!/bin/bash
 # **************************************************************************** #
 #                                                                              #
 #                                                            +#                #
@@ -6,10 +5,12 @@
 #                                                         +###+                #
 #    By: lucas <lucas@tsiaraso.com>                   +########+               #
 #                                                           +###+              #
-#    Created: 2026/01/20 09:05:21 by lucas                   ##+               #
-#    Updated: 2026/01/20 09:50:45 by lucas                  #+                 #
+#    Created: 2026/04/01 23:57:37 by lucas                   ##+               #
+#    Updated: 2026/04/01 23:57:41 by lucas                  #+                 #
 #                                                                              #
 # **************************************************************************** #
+
+#!/bin/bash
 
 # Test script for ft_nm - tests all option combinations
 # Options: -a -g -u -r -p (5 options = 32 combinations)
