@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/01/20 08:37:49 by lucas                  ##+              */
-/*    Updated: 2026/01/20 11:06:27 by lucas                 #+                */
+/*    Updated: 2026/04/01 02:56:49 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	count_sections_macho32(t_file *file)
 {
 	t_mach_header		*hdr;
 	t_load_command		*lc;
-	t_segment_command	*seg;
 	size_t				off;
 	uint32_t			i;
 	int					nsects;
@@ -48,19 +47,15 @@ int	count_sections_macho32(t_file *file)
 	hdr = (t_mach_header *)file->data;
 	nsects = 0;
 	off = sizeof(t_mach_header);
-	i = 0;
-	while (i < hdr->ncmds)
+	i = -1;
+	while (++i < hdr->ncmds)
 	{
 		if (check_offset(file, off, sizeof(t_load_command)) < 0)
 			return (-1);
 		lc = (t_load_command *)((char *)file->data + off);
 		if (lc->cmd == LC_SEGMENT)
-		{
-			seg = (t_segment_command *)lc;
-			nsects += seg->nsects;
-		}
+			nsects += ((t_segment_command *)lc)->nsects;
 		off += lc->cmdsize;
-		i++;
 	}
 	return (nsects);
 }
