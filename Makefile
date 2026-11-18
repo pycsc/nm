@@ -6,7 +6,7 @@
 #    By: lucas <lucas@tsiaraso.com>                   +########+               #
 #                                                           +###+              #
 #    Created: 2026/04/01 23:57:29 by lucas                   ##+               #
-#    Updated: 2026/04/01 23:57:30 by lucas                  #+                 #
+#    Updated: 2026/11/18 16:33:30 by lucas                  #+                 #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,8 +19,7 @@ INCLUDES	= -I includes
 SRCDIR		= srcs
 OBJDIR		= objs
 
-SRCS		= main.c \
-			  elf_parser.c \
+LIB_SRCS	= elf_parser.c \
 			  elf32.c \
 			  elf32_utils.c \
 			  elf64.c \
@@ -37,7 +36,10 @@ SRCS		= main.c \
 			  utils.c \
 			  error.c
 
+SRCS		= main.c $(LIB_SRCS)
+
 OBJS		= $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
+LIB_OBJS	= $(addprefix $(OBJDIR)/, $(LIB_SRCS:.c=.o))
 
 all: $(NAME) assets
 
@@ -53,15 +55,29 @@ $(OBJDIR):
 assets:
 	$(MAKE) -C assets
 
+test_unit: $(LIB_OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o test_unit tests/unit/test_nm_unit.c $(LIB_OBJS)
+	./test_unit
+
+test_func: $(LIB_OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o test_func tests/functional/test_nm_func.c $(LIB_OBJS)
+	./test_func
+
+test_integ: $(NAME)
+	sh tests/integration/test_nm_integ.sh
+
+test_e2e: $(NAME)
+	sh tests/e2e/test_nm_e2e.sh
+
 clean:
 	rm -rf $(OBJDIR)
 	$(MAKE) -C assets clean
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) test_unit test_func
 	$(MAKE) -C assets fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re assets
+.PHONY: all clean fclean re assets test_unit test_func test_integ test_e2e
 .NOTPARALLEL:

@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/04/01 23:55:35 by lucas                  ##+              */
-/*    Updated: 2026/04/01 23:55:37 by lucas                 #+                */
+/*    Updated: 2026/11/18 16:28:30 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ static char	get_section_type_32(Elf32_Shdr *shdr)
 		return ('T');
 	if (shdr->sh_type == SHT_PROGBITS && (shdr->sh_flags & SHF_WRITE))
 		return ('D');
-	if (shdr->sh_type == SHT_PROGBITS || shdr->sh_type == SHT_NOTE)
+	if (shdr->sh_type == SHT_PROGBITS && (shdr->sh_flags & SHF_ALLOC))
+		return ('R');
+	if (shdr->sh_type == SHT_NOTE && (shdr->sh_flags & SHF_ALLOC))
 		return ('R');
 	if (shdr->sh_type == SHT_DYNAMIC)
 		return ('D');
@@ -31,6 +33,8 @@ static char	get_section_type_32(Elf32_Shdr *shdr)
 	{
 		if (shdr->sh_flags & SHF_WRITE)
 			return ('D');
+		if (shdr->sh_flags & SHF_EXECINSTR)
+			return ('T');
 		return ('R');
 	}
 	return ('N');
@@ -42,10 +46,14 @@ static char	apply_binding_32(Elf32_Sym *sym, char c)
 		c += 32;
 	if (ELF32_ST_BIND(sym->st_info) == STB_WEAK)
 	{
+		if (ELF32_ST_TYPE(sym->st_info) == STT_OBJECT)
+		{
+			if (sym->st_shndx == SHN_UNDEF)
+				return ('v');
+			return ('V');
+		}
 		if (sym->st_shndx == SHN_UNDEF)
 			return ('w');
-		if (ELF32_ST_TYPE(sym->st_info) == STT_OBJECT)
-			return ('V');
 		return ('W');
 	}
 	if (ELF32_ST_BIND(sym->st_info) == STB_GNU_UNIQUE)
@@ -57,15 +65,15 @@ char	get_symbol_type_32(Elf32_Sym *sym, Elf32_Shdr *shdr)
 {
 	char	c;
 
-	if (sym->st_shndx == SHN_UNDEF)
-		return ('U');
 	if (ELF32_ST_TYPE(sym->st_info) == STT_GNU_IFUNC)
 	{
 		if (ELF32_ST_BIND(sym->st_info) == STB_LOCAL)
 			return ('i');
 		return ('I');
 	}
-	if (sym->st_shndx == SHN_ABS)
+	if (sym->st_shndx == SHN_UNDEF)
+		c = 'U';
+	else if (sym->st_shndx == SHN_ABS)
 		c = 'A';
 	else if (sym->st_shndx == SHN_COMMON)
 		c = 'C';

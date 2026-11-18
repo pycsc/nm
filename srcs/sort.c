@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/04/01 23:57:13 by lucas                  ##+              */
-/*    Updated: 2026/04/01 23:57:14 by lucas                 #+                */
+/*    Updated: 2026/11/18 16:29:35 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,18 @@ static int	compare_symbols(t_symbol *a, t_symbol *b, int options)
 {
 	int	cmp;
 
-	cmp = ft_strcmp_nocase(a->name, b->name);
-	if (cmp == 0)
-		cmp = ft_strcmp(a->name, b->name);
-	if (cmp == 0)
-		cmp = a->index - b->index;
+	cmp = ft_strcmp(a->name, b->name);
+	if (cmp == 0 && a->value != b->value)
+	{
+		if (a->value < b->value)
+			cmp = -1;
+		else
+			cmp = 1;
+	}
 	if (options & OPT_R)
 		cmp = -cmp;
+	if (cmp == 0)
+		cmp = a->index - b->index;
 	return (cmp);
 }
 

@@ -6,7 +6,7 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/04/01 23:57:08 by lucas                  ##+              */
-/*    Updated: 2026/04/01 23:57:09 by lucas                 #+                */
+/*    Updated: 2026/11/18 16:29:00 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,27 +21,27 @@ int	filter_symbol(t_symbol *sym, int options)
 	}
 	if (options & OPT_U)
 	{
-		if (sym->type != 'U' && sym->type != 'w')
+		if (sym->type != 'U' && sym->type != 'w' && sym->type != 'v')
 			return (0);
 	}
 	return (1);
 }
 
-static void	print_symbol_32(t_symbol *sym, int options)
+static void	print_symbol_32(t_symbol *sym, int options, int file_type)
 {
-	if (options & OPT_U)
+	if ((options & OPT_U) && file_type == FILE_MACHO)
 		printf("%s\n", sym->name);
-	else if (sym->type == 'U' || sym->type == 'w')
+	else if (sym->type == 'U' || sym->type == 'w' || sym->type == 'v')
 		printf("         %c %s\n", sym->type, sym->name);
 	else
 		printf("%08lx %c %s\n", sym->value, sym->type, sym->name);
 }
 
-static void	print_symbol_64(t_symbol *sym, int options)
+static void	print_symbol_64(t_symbol *sym, int options, int file_type)
 {
-	if (options & OPT_U)
+	if ((options & OPT_U) && file_type == FILE_MACHO)
 		printf("%s\n", sym->name);
-	else if (sym->type == 'U' || sym->type == 'w')
+	else if (sym->type == 'U' || sym->type == 'w' || sym->type == 'v')
 		printf("                 %c %s\n", sym->type, sym->name);
 	else
 		printf("%016lx %c %s\n", sym->value, sym->type, sym->name);
@@ -62,9 +62,9 @@ void	print_symbols(t_nm *nm)
 			continue ;
 		}
 		if (nm->file.is_64bit)
-			print_symbol_64(&nm->symbols[i], nm->options);
+			print_symbol_64(&nm->symbols[i], nm->options, nm->file.file_type);
 		else
-			print_symbol_32(&nm->symbols[i], nm->options);
+			print_symbol_32(&nm->symbols[i], nm->options, nm->file.file_type);
 		i++;
 	}
 }

@@ -6,15 +6,19 @@
 /*    By: lucas <lucas@tsiaraso.com>                  +########+              */
 /*                                                          +###+             */
 /*    Created: 2026/04/01 23:55:55 by lucas                  ##+              */
-/*    Updated: 2026/04/01 23:55:59 by lucas                 #+                */
+/*    Updated: 2026/11/18 16:28:30 by lucas                 #+                */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-static int	skip_symbol_32(Elf32_Sym *sym, int options, int idx)
+static int	skip_symbol_32(Elf32_Sym *sym, char *name, int options, int idx)
 {
 	if (idx == 0)
+		return (1);
+	if (ELF32_ST_BIND(sym->st_info) == STB_LOCAL && name[0] == '$'
+		&& (name[1] == 'x' || name[1] == 'd' || name[1] == 'a'
+			|| name[1] == 't') && (name[2] == '\0' || name[2] == '.'))
 		return (1);
 	if (ELF32_ST_TYPE(sym->st_info) == STT_FILE)
 		return (!(options & OPT_A));
@@ -26,23 +30,36 @@ static int	skip_symbol_32(Elf32_Sym *sym, int options, int idx)
 static void	fill_symbol_32(t_symbol *dst, t_extract32 *e, int j)
 {
 	Elf32_Shdr	*shdr;
+	Elf32_Shdr	*shstr;
 
 	shdr = NULL;
 	if (e->syms[e->i].st_shndx < e->ehdr->e_shnum)
 		shdr = get_section_32(e->file, e->ehdr, e->syms[e->i].st_shndx);
 	dst->name = (char *)e->file->data + e->strtab->sh_offset
 		+ e->syms[e->i].st_name;
+	if (ELF32_ST_TYPE(e->syms[e->i].st_info) == STT_SECTION
+		&& e->syms[e->i].st_name == 0 && shdr)
+	{
+		shstr = get_section_32(e->file, e->ehdr, e->ehdr->e_shstrndx);
+		if (shstr && shdr->sh_name < shstr->sh_size)
+			dst->name = (char *)e->file->data + shstr->sh_offset
+				+ shdr->sh_name;
+	}
 	dst->value = e->syms[e->i].st_value;
 	dst->bind = ELF32_ST_BIND(e->syms[e->i].st_info);
 	dst->sym_type = ELF32_ST_TYPE(e->syms[e->i].st_info);
 	dst->shndx = e->syms[e->i].st_shndx;
 	dst->type = get_symbol_type_32(&e->syms[e->i], shdr);
+	if (dst->type == 'n' && dst->name[0] == '.' && dst->name[1] == 'd'
+		&& dst->name[2] == 'e' && dst->name[3] == 'b')
+		dst->type = 'N';
 	dst->index = j;
 }
 
 static int	extract_symbols_32(t_nm *nm, t_extract32 *e)
 {
-	int	j;
+	int		j;
+	char	*name;
 
 	nm->symbols = malloc(sizeof(t_symbol) * e->num_syms);
 	if (!nm->symbols)
@@ -53,7 +70,9 @@ static int	extract_symbols_32(t_nm *nm, t_extract32 *e)
 	{
 		if (e->syms[e->i].st_name >= e->strtab->sh_size)
 			continue ;
-		if (skip_symbol_32(&e->syms[e->i], nm->options, e->i))
+		name = (char *)e->file->data + e->strtab->sh_offset
+			+ e->syms[e->i].st_name;
+		if (skip_symbol_32(&e->syms[e->i], name, nm->options, e->i))
 			continue ;
 		fill_symbol_32(&nm->symbols[j], e, j);
 		j++;
